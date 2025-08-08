@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❤️</text></svg>">
+    <title>My Love</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<!-- Плаваючі серця фоном -->
+<div id="bg-hearts"></div>
+
+<header class="hero" id="top">
+    <h1>Привіт, Кохана людина! 💖</h1>
+    <p class="subtitle">Тут кожен клік — маленьке сердечко до тебе 💘</p>
+
+    <nav class="cta-row">
+        <a class="btn pill" href="#moments">📸 До галереї</a>
+        <a class="btn pill" href="#ideas">🎴 Ідеї</a>
+        <a class="btn pill outline" href="18plus.html">🍓 18+</a>
+    </nav>
+</header>
+
+<main>
+    <!-- Наші моменти -->
+    <section id="moments" class="section">
+        <h2>Наші моменти</h2>
+        <p class="section-sub">Лайкай і залишай маленькі нотатки для пам'яті</p>
+
+        <div class="grid">
+            <!-- 6 демо-карток. Замінюй src на свої фото -->
+            <article class="card" data-id="m1">
+                <img src="photos/photo_1.jpg" alt="Момент #1">
+                <div class="card-body">
+                    <div class="card-head">
+                        <span class="title">Момент #1</span>
+                        <button class="like" aria-label="Лайк">🤍</button>
+                    </div>
+                    <textarea class="note" placeholder="Твоя нотатка..." maxlength="64"></textarea>
+                </div>
+            </article>
+
+            <article class="card" data-id="m2">
+                <img src="photos/photo_2.jpg" alt="Момент #2">
+                <div class="card-body">
+                    <div class="card-head">
+                        <span class="title">Момент #2</span>
+                        <button class="like" aria-label="Лайк">🤍</button>
+                    </div>
+                    <textarea class="note" placeholder="Твоя нотатка..." maxlength="64"></textarea>
+                </div>
+            </article>
+
+            <article class="card" data-id="m3">
+                <img src="photos/photo_3.jpg" alt="Момент #3">
+                <div class="card-body">
+                    <div class="card-head">
+                        <span class="title">Момент #3</span>
+                        <button class="like" aria-label="Лайк">🤍</button>
+                    </div>
+                    <textarea class="note" placeholder="Твоя нотатка..." maxlength="64"></textarea>
+                </div>
+            </article>
+
+            <article class="card" data-id="m4">
+                <img src="photos/photo_4.jpg" alt="Момент #4">
+                <div class="card-body">
+                    <div class="card-head">
+                        <span class="title">Момент #4</span>
+                        <button class="like" aria-label="Лайк">🤍</button>
+                    </div>
+                    <textarea class="note" placeholder="Твоя нотатка..." maxlength="64"></textarea>
+                </div>
+            </article>
+
+            <article class="card" data-id="m5">
+                <img src="photos/photo_5.jpg" alt="Момент #5">
+                <div class="card-body">
+                    <div class="card-head">
+                        <span class="title">Момент #5</span>
+                        <button class="like" aria-label="Лайк">🤍</button>
+                    </div>
+                    <textarea class="note" placeholder="Твоя нотатка..." maxlength="64"></textarea>
+                </div>
+            </article>
+
+            <article class="card" data-id="m6">
+                <img src="photos/photo_6.jpg" alt="Момент #6">
+                <div class="card-body">
+                    <div class="card-head">
+                        <span class="title">Момент #6</span>
+                        <button class="like" aria-label="Лайк">🤍</button>
+                    </div>
+                    <textarea class="note" placeholder="Твоя нотатка..." maxlength="64"></textarea>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Ідеї побачень -->
+    <section id="ideas" class="section ideas">
+        <h2>Ідеї побачень</h2>
+        <p class="section-sub">Гортай стрілками та обирай</p>
+
+        <div class="ideas-wrap ideas-left-slider">
+            <!-- Ліворуч: слайд -->
+            <div class="ideas-slider">
+                <div class="slider-box">
+                    <button class="nav prev" id="prevIdea" aria-label="Назад">◀</button>
+                    <div id="ideaText">—</div>
+                    <button class="nav next" id="nextIdea" aria-label="Вперед">▶</button>
+                </div>
+                <div class="index" id="ideaIndex">0 / 0</div>
+                <button id="chooseIdea" class="btn big">Вибрати</button>
+                <div id="toast" class="toast" role="status" aria-live="polite"></div>
+            </div>
+
+            <!-- Праворуч: список + додавання -->
+            <aside class="ideas-list">
+                <div class="add-row">
+                    <input id="newIdea" type="text" placeholder="Нова ідея..." />
+                    <button id="addIdea" class="btn small">Додати</button>
+                </div>
+                <ul id="ideasUl" class="scroll-y"></ul>
+            </aside>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    Зроблено з любов'ю. Все зберігається лише на твоєму пристрої ❤
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
