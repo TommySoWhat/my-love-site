@@ -12,16 +12,16 @@ async function syncPost(updates){
     try{
         await fetch(SYNC_URL, {
             method:'POST',
-            headers:{'Content-Type':'application/json','X-Auth-Secret': SYNC_SECRET},
-            body: JSON.stringify({ roomId: ROOM_ID, updates, deviceId: DEVICE_ID })
+            headers:{'Content-Type':'text/plain'},
+            body: JSON.stringify({ roomId: ROOM_ID, updates, deviceId: DEVICE_ID, secret: SYNC_SECRET })
         });
     }catch(e){ /* офлайн — ок */ }
 }
 async function syncPull(){
     try{
-        const res = await fetch(`${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`, {
-            headers:{'X-Auth-Secret': SYNC_SECRET}
-        });
+        const res = await fetch(
+            `${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}&secret=${encodeURIComponent(SYNC_SECRET)}`
+        );
         const j = await res.json();
         return j?.state || {};
     }catch(e){ return {}; }
