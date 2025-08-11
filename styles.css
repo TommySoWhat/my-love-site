@@ -239,3 +239,14 @@ body{
 .changelog-list time{ color:var(--muted); font-size:14px; display:block; margin-bottom:4px; }
 .changelog-list .title{ font-weight:600; }
 .changelog-list .desc{ opacity:.9; }
+.skip-link{
+    position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;
+}
+.skip-link:focus{ left:8px; top:8px; width:auto; height:auto; padding:8px 12px; background:#000; color:#fff; border-radius:8px; z-index:2000; }
+.fab:focus-visible, .btn:focus-visible, .icon-btn:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
+.like{ font-size:20px; background:transparent; border:1px solid transparent; cursor:pointer; color:#fff; filter:drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
+.like.liked{ color:#ff7aa8; }
+.like:focus-visible{ outline:2px solid #ffffff99; outline-offset:2px; border-radius:10px; }
+@media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+}
