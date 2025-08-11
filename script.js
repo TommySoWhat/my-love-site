@@ -1,5 +1,5 @@
 // === Sync config (ДОДАТИ НА ПОЧАТОК script.js) ===
-const SYNC_URL = 'https://script.google.com/macros/s/AKfycbztd0A7JeplmO-wO61eSz_-61fhrp5ZLQc_mUR-X_YUxVmxFn8MfNLVNjy-pPQL10iB/exec'; // ← твій URL з деплою
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyTtkDnjTKoNc5pUmBJ4Y0OHcKADRtGFr32-QwMrvrW0x6erW2e8kzkNlINpW3zJfma/exec'; // ← твій URL з деплою
 const SYNC_SECRET = 'my-love-2025';                                // ← той самий SECRET
 const ROOM_ID = 'our-room-001';                                       // можете змінити
 const DEVICE_ID = (() => {
@@ -17,12 +17,11 @@ async function syncPost(updates){
         if (ok) return; // sendBeacon не робить preflight
 
         // fallback, якщо sendBeacon недоступний:
-        await fetch(`${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}&secret=${encodeURIComponent(SYNC_SECRET)}`, {
+        await fetch(`${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`, {
             method: 'POST',
-            // ⬇️ без кастомних заголовків і з простим Content-Type
-            headers: { 'Content-Type':'text/plain' },
+            // важливо: без кастомних заголовків; щоб не було preflight — простий тип
+            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ updates, deviceId: DEVICE_ID })
-            // НІЯКИХ credentials/headers — тоді НЕ буде preflight
         });
     }catch(e){ /* офлайн — ок */ }
 }
@@ -30,7 +29,7 @@ async function syncPost(updates){
 async function syncPull(){
     try{
         const res = await fetch(
-            `${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}&secret=${encodeURIComponent(SYNC_SECRET)}`
+            `${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`
         );
 
         const j = await res.json();
