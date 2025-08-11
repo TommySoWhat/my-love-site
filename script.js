@@ -1,5 +1,5 @@
 // === Sync config (ДОДАТИ НА ПОЧАТОК script.js) ===
-const SYNC_URL = 'https://script.google.com/macros/s/AKfycbwA1pw-ZWL-C1BoYiv0qYbtPyE616Gx-JoiAd7MAw_6ca99VBkvme2AKKdY6T-YRXfQ/exec'; // ← твій URL з деплою
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbxG3roLGs8xM49N50v-DeaCK3LdSmi5pK5n8ugtMx7LgDjqr6MWFPLy1478zWtB5avv/exec'; // ← твій URL з деплою
 const SYNC_SECRET = 'my-love-2025';                                // ← той самий SECRET
 const ROOM_ID = 'our-room-001';                                       // можете змінити
 const DEVICE_ID = (() => {
