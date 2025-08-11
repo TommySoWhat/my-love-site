@@ -250,3 +250,6 @@ body{
 @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
 }
+.fab{
+    opacity: 0.85;
+}
