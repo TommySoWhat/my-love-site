@@ -1,5 +1,5 @@
 // === Sync config (ДОДАТИ НА ПОЧАТОК script.js) ===
-const SYNC_URL = 'https://script.google.com/macros/s/AKfycbzDIJof2VqxOpmvGuXi7l-8cGfHJsXLU6CMsPT-IMLvx5EqvuAC5xKk_McIvH5KGK8/exec'; // ← твій URL з деплою
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyjf9uL4s2rrB8pa6pBlaBf47Hn8H-kc9oDWKQmfvpoTAliqCKOeX8PnG1YOpF8Khur/exec'; // ← твій URL з деплою
 const SYNC_SECRET = 'my-love-2025';                                // ← той самий SECRET
 const ROOM_ID = 'our-room-001';                                       // можете змінити
 const DEVICE_ID = (() => {
@@ -10,13 +10,23 @@ const DEVICE_ID = (() => {
 })();
 async function syncPost(updates){
     try{
-        await fetch(SYNC_URL, {
-            method:'POST',
-            headers:{'Content-Type':'text/plain'},
-            body: JSON.stringify({ roomId: ROOM_ID, updates, deviceId: DEVICE_ID, secret: SYNC_SECRET })
+        const ok = navigator.sendBeacon?.(
+            `${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}&secret=${encodeURIComponent(SYNC_SECRET)}`,
+            new Blob([JSON.stringify({ updates, deviceId: DEVICE_ID })], { type: 'text/plain' })
+        );
+        if (ok) return; // sendBeacon не робить preflight
+
+        // fallback, якщо sendBeacon недоступний:
+        await fetch(`${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}&secret=${encodeURIComponent(SYNC_SECRET)}`, {
+            method: 'POST',
+            // ⬇️ без кастомних заголовків і з простим Content-Type
+            headers: { 'Content-Type':'text/plain' },
+            body: JSON.stringify({ updates, deviceId: DEVICE_ID })
+            // НІЯКИХ credentials/headers — тоді НЕ буде preflight
         });
     }catch(e){ /* офлайн — ок */ }
 }
+
 async function syncPull(){
     try{
         const res = await fetch(
