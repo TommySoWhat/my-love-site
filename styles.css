@@ -251,5 +251,5 @@ body{
     *{ animation: none !important; transition: none !important; }
 }
 .fab{
-    opacity: 0.85;
+    opacity: 0.5;
 }
