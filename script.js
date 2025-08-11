@@ -1,3 +1,31 @@
+// === Sync config (ДОДАТИ НА ПОЧАТОК script.js) ===
+const SYNC_URL = 'https://docs.google.com/spreadsheets/d/1GRwqnt88lCGfsgaU7EIcu1gO424MuEjoKe8Thmp5Zb4/edit?gid=0#gid=0'; // ← твій URL з деплою
+const SYNC_SECRET = 'set-your-secret';                                // ← той самий SECRET
+const ROOM_ID = 'our-room-001';                                       // можете змінити
+const DEVICE_ID = (() => {
+    const k = 'device_id';
+    let id = localStorage.getItem(k);
+    if (!id) { id = 'dev-' + Math.random().toString(36).slice(2,9); localStorage.setItem(k, id); }
+    return id;
+})();
+async function syncPost(updates){
+    try{
+        await fetch(SYNC_URL, {
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-Auth-Secret': SYNC_SECRET},
+            body: JSON.stringify({ roomId: ROOM_ID, updates, deviceId: DEVICE_ID })
+        });
+    }catch(e){ /* офлайн — ок */ }
+}
+async function syncPull(){
+    try{
+        const res = await fetch(`${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`, {
+            headers:{'X-Auth-Secret': SYNC_SECRET}
+        });
+        const j = await res.json();
+        return j?.state || {};
+    }catch(e){ return {}; }
+}
 // ---------- Відправка у Google Form ----------
 function sendToGoogleForm(data) {
     const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdd3H8XgUyi9KHpxDn57bLMDxdbgEqTpMOZBrfds_L3KRx5Rg/formResponse";
@@ -74,12 +102,14 @@ qsa('.card').forEach(card=>{
         const liked = likeBtn.classList.toggle('liked');
         likeBtn.textContent = liked ? '💗' : '🤍';
         localStorage.setItem(storageKey('like', id), liked ? '1' : '0');
+        syncPost([{ key: `like_${id}`, value: liked ? '1' : '0' }]);
         // ► Відправити лайк у форму
         sendToGoogleForm({ moment_id: id, liked: liked ? 'yes' : 'no' });
     });
 
     const sendNote = debounce((val)=>{
         localStorage.setItem(storageKey('note', id), val.trim());
+        syncPost([{ key: `note_${id}`, value: val.trim() }]);
         // ► Відправити нотатку у форму
         sendToGoogleForm({ moment_id: id, note_text: val.trim() });
     }, 700);
@@ -193,6 +223,8 @@ chooseBtn && chooseBtn.addEventListener('click', ()=>{
     if (!ideas.length) return;
     const chosen = ideas[idx];
     toastMsg(`Обрано: ${chosen}`);
+    localStorage.setItem('idea_selected_text', chosen); // ← ДОДАНО
+    syncPost([{ key: 'idea_selected_text', value: chosen }]); // ← ДОДАНО
     // ► Відправити обрану ідею у форму
     sendToGoogleForm({ idea_selected: chosen });
 });
@@ -208,6 +240,81 @@ addIdeaBtn && addIdeaBtn.addEventListener('click', ()=>{
     renderSlider();
     toastMsg('Додано нову ідею');
 });
+// =============== Changelog Drawer ===============
+const fab = document.getElementById('changelogFab');
+const drawer = document.getElementById('changelogDrawer');
+const overlay = document.getElementById('changelogOverlay');
+const closeBtn = document.getElementById('changelogClose');
+const list = document.getElementById('changelogList');
+
+// Мінімальний реєстр змін (можеш вести руками або зберігати в localStorage)
+const CHANGELOG = [
+    { date: '2025-08-11', title: 'Додано іконку «Що нового»', desc: 'Бічна шторка з історією змін, керування мишею та клавішею Esc.' },
+    { date: '2025-08-10', title: 'Оптимізовано зображення', desc: 'Переведено фото у modern формати та ввімкнено lazy-loading.' },
+    { date: '2025-08-05', title: 'Секція «Ідеї побачень»', desc: 'Слайдер + список, збереження в localStorage, відправка у форму.' }
+];
+
+function renderChangelog(items){
+    if (!list) return;
+    list.innerHTML = '';
+    items.forEach(it=>{
+        const li = document.createElement('li');
+        li.innerHTML = `
+      <time datetime="${it.date}">${new Date(it.date).toLocaleDateString('uk-UA')}</time>
+      <div class="title">${it.title}</div>
+      ${it.desc ? `<div class="desc">${it.desc}</div>` : ''}
+    `;
+        list.appendChild(li);
+    });
+}
+renderChangelog(CHANGELOG);
+
+function openDrawer(){
+    if (!drawer) return;
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden','false');
+    overlay?.removeAttribute('hidden');
+    fab?.setAttribute('aria-expanded','true');
+}
+function closeDrawer(){
+    if (!drawer) return;
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true');
+    overlay?.setAttribute('hidden','');
+    fab?.setAttribute('aria-expanded','false');
+}
+
+fab?.addEventListener('click', openDrawer);
+closeBtn?.addEventListener('click', closeDrawer);
+overlay?.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape') closeDrawer();
+});
 
 // Перший рендер
 renderList(); renderSlider();
+
+// === Пул стану з «хмари» і мердж у localStorage (ДОДАТИ ПІСЛЯ ПЕРШОГО РЕНДЕРА) ===
+(async ()=>{
+    const state = await syncPull();
+    // Очікувані ключі: note_m1, like_m1, ..., idea_selected_text
+    Object.entries(state).forEach(([k,v])=>{
+        if (k.startsWith('note_')) localStorage.setItem(k, String(v || ''));
+        if (k.startsWith('like_')) localStorage.setItem(k, String(v || '0'));
+        if (k === 'idea_selected_text') localStorage.setItem('idea_selected_text', String(v || ''));
+    });
+    // Перемалювати картки після мерджу
+    qsa('.card').forEach(card=>{
+        const id = card.dataset.id;
+        const likeBtn = qs('.like', card);
+        const noteEl  = qs('.note', card);
+        if (localStorage.getItem(storageKey('like', id)) === '1'){
+            likeBtn.classList.add('liked'); likeBtn.textContent = '💗';
+        } else {
+            likeBtn.classList.remove('liked'); likeBtn.textContent = '🤍';
+        }
+        const savedNote = localStorage.getItem(storageKey('note', id));
+        if (savedNote != null) noteEl.value = savedNote;
+    });
+})();
+

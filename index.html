@@ -134,6 +134,38 @@
     Зроблено з любов'ю. Все зберігається лише на твоєму пристрої ❤
 </footer>
 
+<!-- FAB: кнопка історії -->
+<button id="changelogFab"
+        class="fab"
+        aria-label="Що нового"
+        aria-controls="changelogDrawer"
+        aria-expanded="false">
+    <!-- SVG вставлений як є -->
+    <?xml version="1.0" encoding="iso-8859-1"?>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M11 4h2v10h-2zM11 18h2v2h-2z"/>
+    </svg>
+</button>
+
+
+<!-- Оверлей + шторка змін -->
+<div id="changelogOverlay" class="drawer-overlay" hidden></div>
+
+<aside id="changelogDrawer"
+       class="drawer"
+       aria-hidden="true"
+       aria-labelledby="changelogTitle"
+       role="dialog">
+    <header class="drawer-head">
+        <h2 id="changelogTitle">Що нового</h2>
+        <button id="changelogClose" class="icon-btn" aria-label="Закрити">✕</button>
+    </header>
+    <ol id="changelogList" class="changelog-list">
+        <!-- JS підставить записи -->
+    </ol>
+</aside>
+
 <script src="script.js"></script>
+
 </body>
 </html>

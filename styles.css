@@ -163,3 +163,79 @@ body{
     padding-right: 20px;
     margin: 0 auto;      /* центрування */
 }
+/* Плаваюча кнопка */
+.changelog-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,.3);
+    z-index: 1000;
+}
+.changelog-btn:hover {
+    transform: scale(1.05);
+}
+
+/* =============== Changelog FAB + Drawer =============== */
+.fab{
+    position:fixed; right:18px; bottom:18px;
+    width:52px; height:52px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    border:none; cursor:pointer; z-index:1100;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color:#fff; font-size:22px; box-shadow:0 10px 24px rgba(0,0,0,.35);
+    transition: transform .12s ease;
+}
+.fab:hover{ transform: translateY(-1px); }
+.fab:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
+
+/* Overlay */
+.drawer-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1098;
+}
+
+/* Drawer */
+.drawer{
+    position:fixed; top:0; right:0; height:100vh; width:min(420px, 92vw);
+    background:var(--card); color:var(--text); z-index:1099;
+    border-left:1px solid rgba(255,255,255,.08);
+    transform: translateX(100%);
+    will-change: transform;
+}
+@media (prefers-reduced-motion: no-preference){
+    .drawer{ transition: transform .28s ease; }
+}
+.drawer.open{ transform: translateX(0); }
+
+.drawer-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 16px; border-bottom:1px solid rgba(255,255,255,.08);
+}
+.icon-btn{
+    background:transparent; border:1px solid rgba(255,255,255,.15);
+    color:var(--text); border-radius:10px; padding:6px 10px; cursor:pointer;
+}
+.icon-btn:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
+
+.changelog-list{
+    margin:0; padding:14px 18px 28px; list-style: none;
+    display:flex; flex-direction:column; gap:12px; max-height:calc(100vh - 70px); overflow:auto;
+}
+.changelog-list li{
+    background: var(--glass);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px; padding:12px;
+}
+.changelog-list time{ color:var(--muted); font-size:14px; display:block; margin-bottom:4px; }
+.changelog-list .title{ font-weight:600; }
+.changelog-list .desc{ opacity:.9; }
