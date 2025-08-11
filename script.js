@@ -1,5 +1,5 @@
 // === Sync config (ДОДАТИ НА ПОЧАТОК script.js) ===
-const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyRFTnMD1Wv-7FqAsKZ6ya5lCenCar7vdM0hW4tsclURtVjhjcx14iHB2X6gHxsX98n/exec'; // ← твій URL з деплою
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbx3op8StL1G6qloB0jc5A4V8P2v42BpmmzIu7PcF0NvBbnI8PB6W7ztPzsc58JT4FPH/exec'; // ← твій URL з деплою
 const SYNC_SECRET = 'my-love-2025';                                // ← той самий SECRET
 const ROOM_ID = 'our-room-001';                                       // можете змінити
 const DEVICE_ID = (() => {
@@ -29,8 +29,9 @@ async function syncPost(updates){
 async function syncPull(){
     try{
         const res = await fetch(
-            `${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`
-        );
+            `${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`, {
+                cache: 'no-store'
+            });
 
         const j = await res.json();
         return j?.state || {};
@@ -305,15 +306,13 @@ document.addEventListener('keydown', (e)=>{
 renderList(); renderSlider();
 
 // === Пул стану з «хмари» і мердж у localStorage (ДОДАТИ ПІСЛЯ ПЕРШОГО РЕНДЕРА) ===
-(async ()=>{
+async function applyCloudState(){
     const state = await syncPull();
-    // Очікувані ключі: note_m1, like_m1, ..., idea_selected_text
     Object.entries(state).forEach(([k,v])=>{
         if (k.startsWith('note_')) localStorage.setItem(k, String(v || ''));
         if (k.startsWith('like_')) localStorage.setItem(k, String(v || '0'));
         if (k === 'idea_selected_text') localStorage.setItem('idea_selected_text', String(v || ''));
     });
-    // Перемалювати картки після мерджу
     qsa('.card').forEach(card=>{
         const id = card.dataset.id;
         const likeBtn = qs('.like', card);
@@ -326,5 +325,26 @@ renderList(); renderSlider();
         const savedNote = localStorage.getItem(storageKey('note', id));
         if (savedNote != null) noteEl.value = savedNote;
     });
+}
+let __lastJSON = '';
+async function pollCloud(){
+    const state = await syncPull();
+    const j = JSON.stringify(state);
+    if (j !== __lastJSON){ __lastJSON = j; applyStateToUI(state); }
+}
+
+// стартова ініціалізація
+(async ()=>{
+    const state = await syncPull();
+    __lastJSON = JSON.stringify(state);
+    applyStateToUI(state);
 })();
+
+// опитування кожні 3 секунди
+setInterval(pollCloud, 3000);
+
+// коли вкладка знову у фокусі — одразу тягнемо
+document.addEventListener('visibilitychange', ()=>{
+    if (!document.hidden) pollCloud();
+});
 
