@@ -12,7 +12,7 @@ async function syncPost(updates){
     try{
         await fetch(SYNC_URL, {
             method:'POST',
-            headers:{'Content-Type':'application/json'},
+            headers:{'Content-Type':'text/plain'},
             body: JSON.stringify({ roomId: ROOM_ID, updates, deviceId: DEVICE_ID, secret: SYNC_SECRET })
         });
     }catch(e){ /* офлайн — ок */ }
