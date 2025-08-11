@@ -1,5 +1,5 @@
 // === Sync config (ДОДАТИ НА ПОЧАТОК script.js) ===
-const SYNC_URL = 'https://script.google.com/macros/s/AKfycbx3op8StL1G6qloB0jc5A4V8P2v42BpmmzIu7PcF0NvBbnI8PB6W7ztPzsc58JT4FPH/exec'; // ← твій URL з деплою
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbwA1pw-ZWL-C1BoYiv0qYbtPyE616Gx-JoiAd7MAw_6ca99VBkvme2AKKdY6T-YRXfQ/exec'; // ← твій URL з деплою
 const SYNC_SECRET = 'my-love-2025';                                // ← той самий SECRET
 const ROOM_ID = 'our-room-001';                                       // можете змінити
 const DEVICE_ID = (() => {
@@ -305,7 +305,7 @@ document.addEventListener('keydown', (e)=>{
 // Перший рендер
 renderList(); renderSlider();
 
-// === Пул стану з «хмари» і мердж у localStorage (ДОДАТИ ПІСЛЯ ПЕРШОГО РЕНДЕРА) ===
+// === Пул стану з «хмари» і мердж у localStorage ===
 async function applyCloudState(){
     const state = await syncPull();
     Object.entries(state).forEach(([k,v])=>{
@@ -326,18 +326,19 @@ async function applyCloudState(){
         if (savedNote != null) noteEl.value = savedNote;
     });
 }
+
 let __lastJSON = '';
 async function pollCloud(){
     const state = await syncPull();
     const j = JSON.stringify(state);
-    if (j !== __lastJSON){ __lastJSON = j; applyStateToUI(state); }
+    if (j !== __lastJSON){ __lastJSON = j; await applyCloudState(); }
 }
 
 // стартова ініціалізація
 (async ()=>{
     const state = await syncPull();
     __lastJSON = JSON.stringify(state);
-    applyStateToUI(state);
+    await applyCloudState();
 })();
 
 // опитування кожні 3 секунди
@@ -347,4 +348,3 @@ setInterval(pollCloud, 3000);
 document.addEventListener('visibilitychange', ()=>{
     if (!document.hidden) pollCloud();
 });
-
