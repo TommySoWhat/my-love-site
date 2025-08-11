@@ -1,5 +1,5 @@
 // === Sync config (ДОДАТИ НА ПОЧАТОК script.js) ===
-const SYNC_URL = 'https://script.google.com/macros/s/AKfycbxG3roLGs8xM49N50v-DeaCK3LdSmi5pK5n8ugtMx7LgDjqr6MWFPLy1478zWtB5avv/exec'; // ← твій URL з деплою
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyYwAVSEQHoUWzLenR4P2uOTLNiDrBlF6Z9_sJhALGrPSdBlyzbhCvsor6Ugj1Zyoo2/exec'; // ← твій URL з деплою
 const SYNC_SECRET = 'my-love-2025';                                // ← той самий SECRET
 const ROOM_ID = 'our-room-001';                                       // можете змінити
 const DEVICE_ID = (() => {
@@ -8,6 +8,19 @@ const DEVICE_ID = (() => {
     if (!id) { id = 'dev-' + Math.random().toString(36).slice(2,9); localStorage.setItem(k, id); }
     return id;
 })();
+function jsonp(url){
+    return new Promise((resolve, reject)=>{
+        const cb = '__cb' + Math.random().toString(36).slice(2);
+        const s = document.createElement('script');
+        const timer = setTimeout(()=>{ cleanup(); reject(new Error('timeout')); }, 6000);
+        function cleanup(){ delete window[cb]; s.remove(); clearTimeout(timer); }
+        window[cb] = (data)=>{ cleanup(); resolve(data); };
+        s.src = `${url}${url.includes('?') ? '&' : '?'}callback=${cb}`;
+        s.onerror = ()=>{ cleanup(); reject(new Error('script error')); };
+        document.head.appendChild(s);
+    });
+}
+
 async function syncPost(updates){
     try{
         const ok = navigator.sendBeacon?.(
@@ -28,13 +41,8 @@ async function syncPost(updates){
 
 async function syncPull(){
     try{
-        const res = await fetch(
-            `${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`, {
-                cache: 'no-store'
-            });
-
-        const j = await res.json();
-        return j?.state || {};
+        const data = await jsonp(`${SYNC_URL}?roomId=${encodeURIComponent(ROOM_ID)}`);
+        return data?.state || {};
     }catch(e){ return {}; }
 }
 // ---------- Відправка у Google Form ----------
